@@ -5,6 +5,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 import keras_tuner as kt
 import tensorflow as tf
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 import random
 
@@ -15,52 +16,46 @@ class Trainer:
         db = DataBuilder()
         db.get_data()
 
-        self.train_generator, self.val_generator = db.get_data()
-
+        self.train_generator, self.val_generator, self.test_generator,self.weights = db.get_data()
+        self.STEP_SIZE_TRAIN=self.train_generator.n//self.train_generator.batch_size
+        self.STEP_SIZE_VALID=self.val_generator.n//self.val_generator.batch_size
+        self.STEP_SIZE_TEST=self.test_generator.n//self.test_generator.batch_size
 
     def train(self, model):
         self.history = model.fit_generator(self.train_generator,
-                                epochs = 1)
-                                #validation_data=self.val_generator)
+                                steps_per_epoch=self.STEP_SIZE_TRAIN,
+                                validation_steps=self.STEP_SIZE_VALID,
+                                epochs = 2,
+                                validation_data=self.val_generator,
+                                class_weight =self.weights)
 
-                        
-        model.save('pretrained_cnn.h5')
-    
+        eval = model.evaluate_generator(generator=self.val_generator,
+                                            steps=self.STEP_SIZE_TEST)         
+        
+        print(eval)
+
+
+        self.test_generator.reset()
+        pred=model.predict_generator(self.test_generator,
+                    steps=self.STEP_SIZE_TEST,
+                    verbose=1)
+
+        pd.DataFrame(pred).to_csv('predictions.csv',index=False)
+
     def predict(self,model):
-        y_pred_probabilities = model.predict_generator(self.val_generator)
+        y_pred_probabilities = model.predict_generator(self.test_generator)
         print(y_pred_probabilities)
         y_pred_classes = np.where(y_pred_probabilities < 0.5, 0, 1)
 
         return y_pred_classes
-
-    def predict_at_random(self, predictions):
-        random_index = random.randint(0, len(predictions))
-        random_prediction = predictions[random_index]
-        random_image  = self.X_test[random_index].reshape( (28,28))
-        random_correct = self.y_test[random_index]
-
-        # plot raw pixel data
-        fig, ax = plt.subplots(1,1)
-        if random_correct == random_prediction:
-            result = 'correctly'
-        else:
-            result = 'falsely'
-
-        target_names=["T-shirt/top","Trouser","Pullover","Dress","Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"]
-        plt.title('The following image is '+ result +' predicted to be a : '+target_names[random_prediction], fontsize=8)
-        plt.imshow(random_image, cmap=plt.get_cmap('gray'))
-        
-        # show the figure
-        plt.show()
-
 
     def eval(self,model):
         eval = model.evaluate(self.X_test,self.y_test)
         print('Test loss is {}, Test accuracy is {}'.format(eval[0],eval[1]))
 
     def confusion_matrix(self, predictions):
-        target_names=self.val_generator.class_indices.keys()
-        ConfusionMatrixDisplay.from_predictions(np.array(self.val_generator.classes).astype(float),predictions, display_labels=target_names, xticks_rotation='vertical', cmap = 'RdPu')
+        target_names=self.test_generator.class_indices.keys()
+        ConfusionMatrixDisplay.from_predictions(np.array(self.test_generator.classes).astype(float),predictions, display_labels=target_names, xticks_rotation='vertical', cmap = 'RdPu')
         plt.show()
 
     def plot_metrics(self):
@@ -82,6 +77,6 @@ class Trainer:
         plt.show()
 
     def class_report(self,predictions):
-        target_names=["T-shirt/top","Trouser","Pullover","Dress","Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"]
-        print(classification_report(self.y_test, predictions, target_names=target_names))
+        target_names=self.test_generator.class_indices.keys()
+        print(classification_report(np.array(self.test_generator.classes).astype(float), predictions, target_names=target_names))
 

@@ -29,19 +29,22 @@ def main():
     model_object = model.baseline_model()
 
     my_trainer = Trainer()
-    
+
+    print(my_trainer.test_generator.class_indices.keys())
     my_trainer.train(model_object)
 
     predictions = my_trainer.predict(model_object)
-    pd.DataFrame(predictions).to_csv('predictions.csv',index=False)
+    pd.DataFrame(predictions).to_csv('predictions2.csv',index=False)
 
-    print(my_trainer.val_generator.class_indices)
-    print('------------------------------------------')
-    print(my_trainer.val_generator.class_indices.keys())
-    print('------------------------------------------')
-    print(my_trainer.val_generator.classes)
+    # print(my_trainer.val_generator.class_indices)
+    # print('------------------------------------------')
+    # print(my_trainer.val_generator.class_indices.keys())
+    # print('------------------------------------------')
+    # print(my_trainer.val_generator.classes)
 
     my_trainer.confusion_matrix(predictions)
+
+    my_trainer.class_report(predictions)
 
 if __name__ == "__main__":
     main()
