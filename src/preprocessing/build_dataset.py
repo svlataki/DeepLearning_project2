@@ -30,9 +30,6 @@ class DataBuilder():
         #Dividing the image data generated into train set and validation set
         datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale = 1. / 255, validation_split=0.25)
         
-        df_train = generate_df(dataset_root, 'train_image_paths.csv')
-        
-        
         train_gen = datagen.flow_from_dataframe(generate_df(dataset_root, 'train_image_paths.csv'),
                                                 directory=dataset_root.parent,
                                                 target_size=(224, 224),

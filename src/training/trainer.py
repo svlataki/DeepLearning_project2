@@ -17,6 +17,7 @@ class Trainer:
         db.get_data()
 
         self.train_generator, self.val_generator, self.test_generator,self.weights = db.get_data()
+        
         self.STEP_SIZE_TRAIN=self.train_generator.n//self.train_generator.batch_size
         self.STEP_SIZE_VALID=self.val_generator.n//self.val_generator.batch_size
         self.STEP_SIZE_TEST=self.test_generator.n//self.test_generator.batch_size
@@ -29,20 +30,16 @@ class Trainer:
                                 validation_data=self.val_generator,
                                 class_weight =self.weights)
 
-        eval = model.evaluate_generator(generator=self.val_generator,
-                                            steps=self.STEP_SIZE_TEST)         
-        
-        print(eval)
+    
+        # pred=model.predict_generator(self.test_generator,
+        #             steps=self.STEP_SIZE_TEST,
+        #             verbose=1)
 
-
-        self.test_generator.reset()
-        pred=model.predict_generator(self.test_generator,
-                    steps=self.STEP_SIZE_TEST,
-                    verbose=1)
-
-        pd.DataFrame(pred).to_csv('predictions.csv',index=False)
+        #pd.DataFrame(pred).to_csv('predictions.csv',index=False)
 
     def predict(self,model):
+        self.test_generator.reset()
+
         y_pred_probabilities = model.predict_generator(self.test_generator)
         print(y_pred_probabilities)
         y_pred_classes = np.where(y_pred_probabilities < 0.5, 0, 1)
@@ -50,7 +47,8 @@ class Trainer:
         return y_pred_classes
 
     def eval(self,model):
-        eval = model.evaluate(self.X_test,self.y_test)
+        eval = model.evaluate_generator(generator=self.val_generator,
+                                            steps=self.STEP_SIZE_TEST)     
         print('Test loss is {}, Test accuracy is {}'.format(eval[0],eval[1]))
 
     def confusion_matrix(self, predictions):
