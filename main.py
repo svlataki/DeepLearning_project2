@@ -37,7 +37,7 @@ def main(model):
 
     my_trainer.train(model_object)
 
-    my_trainer.plot_metrics()
+    #my_trainer.plot_metrics()
 
     predictions = my_trainer.predict(model_object)
 
