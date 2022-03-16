@@ -2,7 +2,7 @@
 from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.applications import DenseNet169
 from keras.models import Sequential, Model
-from keras.layers import Dense, Flatten, GlobalMaxPooling2D, Dropout,MaxPooling2D,Conv2D, BatchNormalization
+from keras.layers import Dense, Flatten, GlobalMaxPooling2D, Dropout,MaxPooling2D,Conv2D, BatchNormalization,GlobalAveragePooling2D
 from tensorflow import keras
 
 
@@ -23,7 +23,8 @@ class PRETRAINED_CNN():
         desnenet = DenseNet169(include_top=False, weights = 'imagenet', input_shape=(224, 224, 3) )
         desnenet.trainable = False
 
-        # x = desnenet.output
+        #x = desnenet.output
+
         # x = GlobalMaxPooling2D()(x)
         # x=Dropout(0.3)(x) 
         # x=Dense(1024,activation='relu')(x) 
@@ -34,6 +35,15 @@ class PRETRAINED_CNN():
         # x=Dense(1, activation= 'sigmoid')(x)
         # self.model = Model(inputs = desnenet.input, outputs = x)
 
+        # x= GlobalAveragePooling2D()(x)
+        # x= BatchNormalization()(x)
+        # x= Dropout(0.5)(x)
+        # x= Dense(1024,activation='relu')(x) 
+        # x= Dense(512,activation='relu')(x) 
+        # x= BatchNormalization()(x)
+        # x= Dropout(0.5)(x)
+        # x=Dense(1, activation= 'sigmoid')(x)
+        # self.model = Model(inputs = desnenet.input, outputs = x)
 
         self.model.add(desnenet)
         self.model.add(Flatten())

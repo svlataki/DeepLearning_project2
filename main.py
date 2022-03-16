@@ -26,7 +26,7 @@ def main(model):
         
         model = PRETRAINED_CNN(pixels,num_categories)
 
-    elif model == 'pretrained_cnn':
+    elif model == 'cnn':
         model = CNN(pixels,num_categories)
 
 
@@ -37,7 +37,7 @@ def main(model):
 
     my_trainer.train(model_object)
 
-    #my_trainer.plot_metrics()
+    my_trainer.plot_metrics()
 
     predictions = my_trainer.predict(model_object)
 

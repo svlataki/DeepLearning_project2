@@ -24,9 +24,9 @@ class Trainer:
 
     def train(self, model):
         self.history = model.fit_generator(self.train_generator,
-                                steps_per_epoch=self.STEP_SIZE_TRAIN,
-                                validation_steps=self.STEP_SIZE_VALID,
-                                epochs = 2,
+                                # steps_per_epoch=self.STEP_SIZE_TRAIN,
+                                # validation_steps=self.STEP_SIZE_VALID,
+                                epochs = 5,
                                 validation_data=self.val_generator,
                                 class_weight =self.weights)
 
@@ -41,7 +41,7 @@ class Trainer:
         self.test_generator.reset()
 
         y_pred_probabilities = model.predict_generator(self.test_generator)
-        print(y_pred_probabilities)
+        #print(y_pred_probabilities)
         y_pred_classes = np.where(y_pred_probabilities < 0.5, 0, 1)
 
         return y_pred_classes
@@ -58,8 +58,8 @@ class Trainer:
 
     def plot_metrics(self):
         print(self.history.history)
-        plt.plot(self.history.history['accuracy'])
-        plt.plot(self.history.history['val_accuracy'])
+        plt.plot(self.history.history['binary_accuracy'])
+        plt.plot(self.history.history['val_binary_accuracy'])
         plt.title('model accuracy')
         plt.ylabel('accuracy')
         plt.xlabel('epoch')
