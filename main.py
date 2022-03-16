@@ -1,4 +1,6 @@
 
+from cgi import print_arguments
+from re import A
 from src.training.trainer import Trainer
 import os
 from src.models.pretrained_cnn import PRETRAINED_CNN
@@ -13,8 +15,6 @@ import argparse
 def parse_arguments():
     my_parser = argparse.ArgumentParser()
     my_parser.add_argument('--model', type=str, required=True)
-    # my_parser.add_argument('--task', type=str, required=True)
-    # my_parser.add_argument('--tune', action='store_true')
     
     return my_parser.parse_args()
 
@@ -23,16 +23,14 @@ def main(model):
     pixels = 28*28
     num_categories = 2
     if model == 'pretrained_cnn':
-        
         model = PRETRAINED_CNN(pixels,num_categories)
-
     elif model == 'cnn':
         model = CNN(pixels,num_categories)
 
 
     
     model_object = model.baseline_model()
-
+    print(model_object)
     my_trainer = Trainer()
 
     my_trainer.train(model_object)
