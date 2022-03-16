@@ -1,8 +1,10 @@
 
 from keras.models import Sequential, Model
-from keras.layers import Activation, Dense, Flatten,GlobalAveragePooling2D, GlobalMaxPooling2D, Dropout,MaxPooling2D,Conv2D, BatchNormalization
+from keras.layers import Activation, Dense, Flatten,GlobalAveragePooling2D, GlobalMaxPooling2D, Dropout,MaxPooling2D,Conv2D, BatchNormalization,Input
 from tensorflow import keras
-from keras import Input
+
+
+# from keras import Input
 
 
 class CNN():
@@ -12,26 +14,26 @@ class CNN():
 
     def baseline_model(self):
 
-        input = Input(shape=(299,299,3))
-        x = Conv2D(input,32,(3,3),activation='relu')
-        print(x)
-        x = Conv2D(x,64,(3,3),activation='relu')
-        x = Conv2D(x,64,(3,3),activation='relu')
-        x = MaxPooling2D((3, 3), strides=(2, 2))(x)
+        input = Input(shape=(224, 224, 3),name="input")
+        x1 = Conv2D(32,(3,3),activation='relu')(input)
 
-        x = Conv2D(x, 64, (3, 3),activation='relu')
-        x = Conv2D(x, 128, (3, 3),activation='relu')
-        x = Conv2D(x, 128, (3, 3),activation='relu')
-        x = MaxPooling2D((3, 3), strides=(2, 2))(x)
+        x1 = Conv2D(64,(3,3),activation='relu')(x1)
+        x1 = Conv2D(64,(3,3),activation='relu')(x1)
+        x1 = MaxPooling2D((3, 3), strides=(2, 2))(x1)
 
-        x = Conv2D(x, 128, (3, 3),activation='relu')
-        x = Conv2D(x, 256, (3, 3),activation='relu')
-        x = Conv2D(x, 256, (3, 3),activation='relu')
-        x = MaxPooling2D((3, 3), strides=(2, 2))(x)
+        x2 = Conv2D( 64, (3, 3),activation='relu')(x1)
+        x2 = Conv2D( 128, (3, 3),activation='relu')(x2)
+        x2 = Conv2D(128, (3, 3),activation='relu')(x2)
+        x2 = MaxPooling2D((3, 3), strides=(2, 2))(x2)
 
-        x = GlobalAveragePooling2D()(x)
-        x = Dropout(0.3)(x)
-        predictions = Dense(1,activation='sigmoid',name="final")(x) #NOTE: here, not applying l2 reg.
+        x3 = Conv2D(128, (3, 3),activation='relu')(x2)
+        x3 = Conv2D(256, (3, 3),activation='relu')(x3)
+        x3 = Conv2D(256, (3, 3),activation='relu')(x3)
+        x3 = MaxPooling2D((3, 3), strides=(2, 2))(x3)
+
+        x4 = GlobalAveragePooling2D()(x3)
+        x4 = Dropout(0.3)(x4)
+        predictions = Dense(1,activation='sigmoid',name="final")(x4) #: here, not applying l2 reg.
         self.model = Model(inputs= input, outputs=predictions)
 
         ###Compiling model
