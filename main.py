@@ -18,28 +18,25 @@ def parse_arguments():
     
     return my_parser.parse_args()
 
-def main(model):
+def main(model_type):
 
-    pixels = 28*28
-    num_categories = 2
-    if model == 'pretrained_cnn':
-        model = PRETRAINED_CNN(pixels,num_categories)
-    elif model == 'cnn':
-        model = CNN(pixels,num_categories)
+    num_categories = 1
+    if model_type == 'pretrained_cnn':
+        model = PRETRAINED_CNN(num_categories)
+    elif model_type == 'cnn':
+        model = CNN(num_categories)
 
-
-    
     model_object = model.baseline_model()
-    print(model_object)
+
     my_trainer = Trainer()
 
     my_trainer.train(model_object)
 
-    my_trainer.plot_metrics()
+    my_trainer.plot_metrics(model_type)
 
     predictions = my_trainer.predict(model_object)
 
-    my_trainer.confusion_matrix(predictions)
+    my_trainer.confusion_matrix(predictions,model_type)
 
     my_trainer.class_report(predictions)
 

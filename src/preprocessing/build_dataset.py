@@ -6,9 +6,6 @@ from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 import numpy as np
 from src.preprocessing.utils import generate_df
-import hub
-import os
-import pandas as pd
 from pathlib import Path
 tf.random.set_seed(42)
 np.random.seed(0)
@@ -28,7 +25,7 @@ class DataBuilder():
         
         dataset_root = Path(r'C:\Users\svlataki\Downloads\MURA-v1.1')
         #Dividing the image data generated into train set and validation set
-        datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale = 1. / 255, validation_split=0.25)
+        datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale = 1. / 255, validation_split=0.25,horizontal_flip=True,rotation_range=90)
         
         train_gen = datagen.flow_from_dataframe(generate_df(dataset_root, 'train_image_paths.csv'),
                                                 directory=dataset_root.parent,

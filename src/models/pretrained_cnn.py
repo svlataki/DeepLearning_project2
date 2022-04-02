@@ -8,8 +8,7 @@ from tensorflow import keras
 
 class PRETRAINED_CNN():
 
-    def __init__(self, in_shape, num_categories):
-        self.in_shape = in_shape
+    def __init__(self, num_categories):
         self.num_categories = num_categories
 
     def baseline_model(self):
@@ -23,28 +22,6 @@ class PRETRAINED_CNN():
         desnenet = DenseNet169(include_top=False, weights = 'imagenet', input_shape=(224, 224, 3) )
         desnenet.trainable = False
 
-        #x = desnenet.output
-
-        # x = GlobalMaxPooling2D()(x)
-        # x=Dropout(0.3)(x) 
-        # x=Dense(1024,activation='relu')(x) 
-        # x=Dropout(0.3)(x) 
-        # #x=Dense(1024,activation='relu')(x) 
-        # x=Dense(512,activation='relu')(x) 
-        # x=Dropout(0.3)(x) 
-        # x=Dense(1, activation= 'sigmoid')(x)
-        # self.model = Model(inputs = desnenet.input, outputs = x)
-
-        # x= GlobalAveragePooling2D()(x)
-        # x= BatchNormalization()(x)
-        # x= Dropout(0.5)(x)
-        # x= Dense(1024,activation='relu')(x) 
-        # x= Dense(512,activation='relu')(x) 
-        # x= BatchNormalization()(x)
-        # x= Dropout(0.5)(x)
-        # x=Dense(1, activation= 'sigmoid')(x)
-        # self.model = Model(inputs = desnenet.input, outputs = x)
-
         self.model.add(desnenet)
         self.model.add(Flatten())
         self.model.add(Dense(1, activation = 'sigmoid'))
@@ -54,10 +31,10 @@ class PRETRAINED_CNN():
             optimizer=keras.optimizers.Adam(learning_rate=0.01),
             metrics=['binary_accuracy'],
         )
-        # print(self.model.summary())
+        
         return self.model
 
-    def baseline_model2(self):
+    def alternate_model(self):
         base_model = DenseNet169(weights='imagenet', include_top=False, input_shape=(224, 224, 3) )
         base_model.trainable = False
         last = base_model.output

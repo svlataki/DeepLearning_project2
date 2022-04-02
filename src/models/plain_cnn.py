@@ -8,8 +8,7 @@ from tensorflow import keras
 
 
 class CNN():
-    def __init__(self, in_shape, num_categories):
-        self.in_shape = in_shape
+    def __init__(self, num_categories):
         self.num_categories = num_categories
 
     def baseline_model(self):
